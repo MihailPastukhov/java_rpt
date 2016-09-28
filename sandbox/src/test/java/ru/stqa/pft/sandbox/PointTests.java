@@ -12,6 +12,6 @@ import org.testng.annotations.Test;
 public class PointTests {
     Point a = new Point(1,1);
     Point b = new Point(5, 5);
-    Assert
+    
 
 }
