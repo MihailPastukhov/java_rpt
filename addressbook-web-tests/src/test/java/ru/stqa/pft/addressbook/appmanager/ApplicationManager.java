@@ -1,17 +1,16 @@
-package ru.stqa.pft.addressbook;
+package ru.stqa.pft.addressbook.appmanager;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import ru.stqa.pft.addressbook.model.GroupData;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Michael on 04.10.2016.
+ * Created by Michael on 09.10.2016.
  */
-public class BaseTest {
+public class ApplicationManager {
     FirefoxDriver wd;
 
     public static boolean isAlertPresent(FirefoxDriver wd) {
@@ -23,22 +22,21 @@ public class BaseTest {
         }
     }
 
-    @BeforeMethod
-    public void setUp() throws Exception {
+    public void init() {
         wd = new FirefoxDriver();
         wd.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         wd.get("http://localhost/addressbook/");
     }
 
-    protected void returnGroupPage() {
+    public void returnGroupPage() {
         wd.findElement(By.linkText("group page")).click();
     }
 
-    protected void submitGroupCreation() {
+    public void submitGroupCreation() {
         wd.findElement(By.name("submit")).click();
     }
 
-    protected void fillGroupData(GroupData groupData) {
+    public void fillGroupData(GroupData groupData) {
         wd.findElement(By.name("group_name")).click();
         wd.findElement(By.name("group_name")).clear();
         wd.findElement(By.name("group_name")).sendKeys(groupData.getName());
@@ -50,24 +48,23 @@ public class BaseTest {
         wd.findElement(By.name("group_footer")).sendKeys(groupData.getFooter());
     }
 
-    protected void groupCreation() {
+    public void groupCreation() {
         wd.findElement(By.name("new")).click();
     }
 
-    protected void goToGroupPage() {
+    public void goToGroupPage() {
         wd.findElement(By.linkText("groups")).click();
     }
 
-    @AfterMethod
-    public void tearDown() {
+    public void stop() {
         wd.quit();
     }
 
-    protected void deleteSelectedGroups() {
+    public void deleteSelectedGroups() {
         wd.findElement(By.name("delete")).click();
     }
 
-    protected void selectGroup() {
+    public void selectGroup() {
         wd.findElement(By.xpath("//div[@id='content']/form[2]/input[2]")).click();
     }
 }
