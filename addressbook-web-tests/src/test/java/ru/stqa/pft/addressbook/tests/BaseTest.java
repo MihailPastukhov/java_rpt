@@ -1,5 +1,9 @@
 package ru.stqa.pft.addressbook.tests;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.BrowserType;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import ru.stqa.pft.addressbook.appmanager.ApplicationManager;
@@ -13,7 +17,7 @@ public class BaseTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        app.init();
+        app.init(BrowserType.CHROME);
     }
 
     @AfterMethod
