@@ -1,11 +1,11 @@
 package ru.stqa.pft.addressbook.tests;
 
 import org.junit.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -13,23 +13,24 @@ import java.util.List;
  */
 public class GroupModificationTests extends BaseTest {
 
+    @BeforeMethod
+    private void ensurePrecondition() {
+        app.goTo().groupPage();
+        if (app.group().list().size()==0){
+            app.group().create(new GroupData("test1", "test8", null));
+        }
+    }
+
     @Test
     public void testGroupModification(){
-        app.getNavigationHelper().goToGroupPage();
-        if (!app.getGroupHelper().isThereAGroup()){
-            app.getGroupHelper().createGroup(new GroupData("test1", "test8", null));
-        }
-        List<GroupData> before = app.getGroupHelper().getGroupsList();
-        app.getGroupHelper().selectGroup(before.size() - 1);
-        app.getGroupHelper().modifySelectedGroup();
-        GroupData group = new GroupData(before.get(before.size()-1).getId(), "test1", "test8", null);
-        app.getGroupHelper().fillGroupData(group);
-        app.getGroupHelper().updateNewGroupData();
-        app.getGroupHelper().returnGroupPage();
-        List<GroupData> after = app.getGroupHelper().getGroupsList();
+        List<GroupData> before = app.group().list();
+        int index = before.size() - 1;
+        GroupData group = new GroupData(before.get(index).getId(), "test1", "test8", null);
+        app.group().modify(index, group);
+        List<GroupData> after = app.group().list();
         Assert.assertEquals(after.size(), before.size());
 
-        before.remove(before.size() - 1);
+        before.remove(index);
         before.add(group);
 
         Comparator<? super GroupData> byId = ((o1, o2) -> Integer.compare(o1.getId(), o2.getId()));
@@ -38,5 +39,6 @@ public class GroupModificationTests extends BaseTest {
         Assert.assertEquals(after, before);
 
     }
+
 
 }

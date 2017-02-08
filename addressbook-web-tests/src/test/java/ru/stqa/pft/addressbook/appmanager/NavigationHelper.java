@@ -19,7 +19,7 @@ public class NavigationHelper extends BaseHelper {
         click(By.xpath("//a[contains(text(),'home')]"));
     }
 
-    public void goToGroupPage() {
+    public void groupPage() {
         if (isElementPresent(By.tagName("h1"))
                 && (wd.findElement(By.tagName("h1")).getText().equals("groups"))
                 && (isElementPresent(By.name("new")))){

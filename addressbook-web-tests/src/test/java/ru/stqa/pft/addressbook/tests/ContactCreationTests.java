@@ -1,21 +1,18 @@
 package ru.stqa.pft.addressbook.tests;
 
 import org.junit.Assert;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.ContactData;
-import ru.stqa.pft.addressbook.model.GroupData;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
 public class ContactCreationTests extends BaseTest {
 
 
-    @Test
+    @Test(enabled = false)
     public void testContactCreation()  {
-        app.getNavigationHelper().goToHomePage();
+        app.goTo().goToHomePage();
         List<ContactData> before = app.getContactHelper().getContactsList();
 
         app.getContactHelper().addNewContact();
