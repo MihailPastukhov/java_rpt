@@ -7,7 +7,9 @@ import ru.stqa.pft.addressbook.model.GroupData;
 import ru.stqa.pft.addressbook.tests.BaseTest;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Michael on 20.01.2017.
@@ -21,7 +23,7 @@ public class GroupHelper extends BaseHelper {
     }
 
     public void returnGroupPage() {
-        click(By.xpath("//a[contains(text(),'groupPage page')]"));
+        click(By.xpath("//a[contains(text(),'group page')]"));
     }
 
     public void submitGroupCreation() {
@@ -46,6 +48,10 @@ public class GroupHelper extends BaseHelper {
         wd.findElements(By.name("selected[]")).get(index).click();
     }
 
+    public void selectGroupById(int id) {
+        wd.findElement(By.xpath("//input[@value='"+ id +"']")).click();
+    }
+
     public void modifySelectedGroup() {
         click(By.name("edit"));
     }
@@ -61,8 +67,8 @@ public class GroupHelper extends BaseHelper {
         returnGroupPage();
     }
 
-    public void modify(int index, GroupData group) {
-        selectGroup(index);
+    public void modify(GroupData group) {
+        selectGroupById(group.getId());
         modifySelectedGroup();
         fillGroupData(group);
         updateNewGroupData();
@@ -74,6 +80,14 @@ public class GroupHelper extends BaseHelper {
         deleteSelectedGroups();
         returnGroupPage();
     }
+
+    public void delete(GroupData group) {
+        selectGroupById(group.getId());
+        deleteSelectedGroups();
+        returnGroupPage();
+    }
+
+
 
 
     public boolean isThereAGroup() {
@@ -91,9 +105,22 @@ public class GroupHelper extends BaseHelper {
         for (WebElement element : elements){
             String name = element.getText();
             int id = Integer.parseInt(element.findElement(By.tagName("input")).getAttribute("value"));
-            GroupData group = new GroupData(id, name, null, null);
+            GroupData group = new GroupData().withId(id).withName(name);
             groups.add(group);
         }
         return groups;
     }
+
+    public Set<GroupData> all() {
+        Set<GroupData> groups = new HashSet<GroupData>();
+        List<WebElement> elements = wd.findElements(By.xpath("//span[@class='group']"));
+        for (WebElement element : elements){
+            String name = element.getText();
+            int id = Integer.parseInt(element.findElement(By.tagName("input")).getAttribute("value"));
+            groups.add(new GroupData().withId(id).withName(name));
+        }
+        return groups;
+    }
+
+
 }
