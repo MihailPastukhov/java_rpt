@@ -3,8 +3,12 @@ package ru.stqa.pft.addressbook.tests;
 import org.junit.Assert;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.ContactData;
+import ru.stqa.pft.addressbook.model.Contacts;
 
-import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ContactDeletionTests extends BaseTest {
 
@@ -12,19 +16,18 @@ public class ContactDeletionTests extends BaseTest {
     @Test
     public void testContactDeletion() {
         app.goTo().homePage();
-        List<ContactData> before = app.contact().list();
+        Contacts before = app.contact().all();
+        ContactData deletedContact = before.iterator().next();
         if (!app.contact().isThereAContact()){
             app.contact().create(new ContactData().withFirstName("test313").withLastName("test2").withNickName(null).withAddress("testaddress, 334")
                     .withHomePhone("258753159").withMobile("195375888").withWork("195375888").withEmail("testEmail@email.com").withGroup("test1"), true);
         }
-        int index = before.size() - 1;
-        app.contact().delete(index);
-        List<ContactData> after = app.contact().list();
-        Assert.assertEquals(after.size(), before.size() - 1);
 
-        before.remove(index);
+        app.contact().delete(deletedContact);
+        Contacts after = app.contact().all();
+        assertThat(after.size(), equalTo(before.size() - 1));
 
-        Assert.assertEquals(after, before);
+        assertThat(after, equalTo(before.without(deletedContact)));
     }
 
 
