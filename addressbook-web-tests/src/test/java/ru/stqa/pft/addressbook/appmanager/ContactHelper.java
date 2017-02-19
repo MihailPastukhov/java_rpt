@@ -6,10 +6,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import ru.stqa.pft.addressbook.model.ContactData;
+import ru.stqa.pft.addressbook.model.Contacts;
 import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Groups;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Michael on 20.01.2017.
@@ -34,6 +38,7 @@ public class ContactHelper extends BaseHelper {
         type(By.name("address"), contactData.getAddress());
         type(By.name("home"), contactData.getHomePhone());
         type(By.name("mobile"), contactData.getMobile());
+        type(By.name("work"), contactData.getWork());
         type(By.name("email"), contactData.getEmail());
         if(creation){
             if(isElementPresent(By.name("new_group"))){
@@ -70,15 +75,34 @@ public class ContactHelper extends BaseHelper {
     }
 
     public void returnToHomePage() {
-        click(By.xpath("//a[contains(text(),'home page')]"));
+        click(By.xpath("//a[contains(text(),'home')]"));
     }
 
-    public void createContact(ContactData contactData, boolean creation) {
+    public void create(ContactData contact, boolean creation) {
         addNewContact();
-        fillContactData(new ContactData("test1", "test2", "nickTest", "testAddress1, 123", "123-123-123", "321-258-952", "testEmail@email.com", "test1"), true);
+        fillContactData(new ContactData().withFirstName(contact.getFirstName()).withLastName(contact.getLastName()).withNickName(contact.getNickName())
+                .withAddress(contact.getAddress()).withHomePhone(contact.getHomePhone()).withMobile(contact.getMobile()).withWork(contact.getWork())
+                .withEmail(contact.getEmail()).withGroup(contact.getGroup()), creation);
         submitContactCreation();
         returnToHomePage();
     }
+
+    public void delete(int index) {
+        selectContact(index);
+        deleteSelectedContact();
+        returnToHomePage();
+    }
+
+    public void modify(ContactData contact, int index){
+        selectContact(index);
+        modifySelectedContact();
+        fillContactData(new ContactData().withFirstName(contact.getFirstName()).withLastName(contact.getLastName()).withNickName(contact.getNickName())
+                .withAddress(contact.getAddress()).withHomePhone(contact.getHomePhone()).withMobile(contact.getMobile()).withWork(contact.getWork())
+                .withEmail(contact.getEmail()).withGroup(contact.getGroup()), false);
+        updateSelectedContact();
+        returnToHomePage();
+    }
+
 
     public boolean isThereAContact() {
         return isElementPresent(By.name("selected[]"));
@@ -88,31 +112,7 @@ public class ContactHelper extends BaseHelper {
         return wd.findElements(By.name("selected[]")).size();
     }
 
-//    public List<ContactData> getContactsList() {
-//        List<ContactData> contacts = new ArrayList<ContactData>();
-//        List<WebElement> elements = wd.findElements(By.xpath("//tr[@name='entry']"));
-//        for (WebElement element : elements){
-//            String lastName = element.findElement(By.xpath("//td[2]")).getText();
-//            String firstName = element.findElement(By.xpath("//td[3]")).getText();
-//            String address = element.findElement(By.xpath("//td[4]")).getText();
-//            String email = element.findElement(By.xpath("//td[5]")).getText();
-//            String phones = element.findElement(By.xpath("//td[6]")).getText();
-//            List<String> phonesList = new ArrayList<String>();
-//            for (String phone : phones.split("\n")) {
-//                phonesList.add(phone);
-//            }
-//            String homePhone = phonesList.get(0);
-//            String mobile = phonesList.get(1);
-//            ContactData contact = new ContactData(firstName, lastName, null, address, homePhone, mobile, email, null);
-//            ContactData contact = new ContactData(firstName, lastName, null, null, null, null, null, null);
-//            contacts.add(contact);
-//        }
-//
-//        return contacts;
-//    }
-
-
-    public List<ContactData> getContactsList() {
+    public List<ContactData> list() {
         List<ContactData> contacts = new ArrayList<ContactData>();
         List<WebElement> elements = wd.findElements(By.xpath(".//*[@id='maintable']/tbody/tr[@name='entry']"));
         for (int i=1 ; i < elements.size()+1 ; i++){
@@ -127,6 +127,7 @@ public class ContactHelper extends BaseHelper {
             }
             String homePhone = new String();
             String mobile = new String();
+            String work = new String();
             switch (phonesList.size()){
                 case 1:
                     homePhone = phonesList.get(0);
@@ -135,14 +136,61 @@ public class ContactHelper extends BaseHelper {
                     homePhone = phonesList.get(0);
                     mobile = phonesList.get(1);
                     break;
+                case 3:
+                    homePhone = phonesList.get(0);
+                    mobile = phonesList.get(1);
+                    work = phonesList.get(2);
+                    break;
             }
             phonesList.clear();
 
-            ContactData contact = new ContactData(firstName, lastName, null, address, homePhone, mobile, email, null);
+            ContactData contact = new ContactData().withFirstName(firstName).withLastName(lastName).withNickName(null).withAddress(address)
+                    .withHomePhone(homePhone).withMobile(mobile).withWork(work).withEmail(email).withGroup(null);
             contacts.add(contact);
         }
         return contacts;
     }
+
+    public Set<ContactData> all() {
+        Set<ContactData> contacts = new HashSet<>();
+        List<WebElement> elements = wd.findElements(By.xpath(".//*[@id='maintable']/tbody/tr[@name='entry']"));
+        for (int i=1 ; i < elements.size()+1 ; i++){
+            String lastName = wd.findElement(By.xpath("//tr[@name='entry']["+i+"]/td[2]")).getText();
+            String firstName = wd.findElement(By.xpath("//tr[@name='entry']["+i+"]/td[3]")).getText();
+            String address = wd.findElement(By.xpath("//tr[@name='entry']["+i+"]/td[4]")).getText();
+            String email = wd.findElement(By.xpath("//tr[@name='entry']["+i+"]/td[5]")).getText();
+            String phones = wd.findElement(By.xpath("//tr[@name='entry']["+i+"]/td[6]")).getText();
+            List<String> phonesList = new ArrayList<String>();
+            for (String phone : phones.split("\n")) {
+                phonesList.add(phone);
+            }
+            String homePhone = new String();
+            String mobile = new String();
+            String work = new String();
+            switch (phonesList.size()){
+                case 1:
+                    homePhone = phonesList.get(0);
+                    break;
+                case 2:
+                    homePhone = phonesList.get(0);
+                    mobile = phonesList.get(1);
+                    break;
+                case 3:
+                    homePhone = phonesList.get(0);
+                    mobile = phonesList.get(1);
+                    work = phonesList.get(2);
+                    break;
+            }
+            phonesList.clear();
+
+            ContactData contact = new ContactData().withFirstName(firstName).withLastName(lastName).withNickName(null).withAddress(address)
+                    .withHomePhone(homePhone).withMobile(mobile).withWork(work).withEmail(email).withGroup(null);
+            contacts.add(contact);
+        }
+        return contacts;
+    }
+
+
 
 
     public String getPhone() {

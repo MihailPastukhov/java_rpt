@@ -5,12 +5,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import ru.stqa.pft.addressbook.model.GroupData;
 import ru.stqa.pft.addressbook.model.Groups;
-import ru.stqa.pft.addressbook.tests.BaseTest;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Michael on 20.01.2017.
@@ -43,10 +40,6 @@ public class GroupHelper extends BaseHelper {
 
     public void deleteSelectedGroups() {
         click(By.name("delete"));
-    }
-
-    public void selectGroup(int index) {
-        wd.findElements(By.name("selected[]")).get(index).click();
     }
 
     public void selectGroupById(int id) {

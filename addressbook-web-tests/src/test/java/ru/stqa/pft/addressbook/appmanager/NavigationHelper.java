@@ -12,7 +12,7 @@ public class NavigationHelper extends BaseHelper {
         super(wd);
     }
 
-    public void goToHomePage() {
+    public void homePage() {
         if (isElementPresent(By.id("maintable"))){
             return;
         }

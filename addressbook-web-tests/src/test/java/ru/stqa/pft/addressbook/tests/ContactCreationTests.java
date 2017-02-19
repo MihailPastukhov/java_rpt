@@ -10,18 +10,19 @@ import java.util.List;
 public class ContactCreationTests extends BaseTest {
 
 
-    @Test(enabled = false)
+    @Test
     public void testContactCreation()  {
-        app.goTo().goToHomePage();
-        List<ContactData> before = app.getContactHelper().getContactsList();
+        app.goTo().homePage();
+        List<ContactData> before = app.contact().list();
 
-        app.getContactHelper().addNewContact();
+        app.contact().addNewContact();
 
-        ContactData contact = new ContactData("test313", "test2", null, "testaddress, 334", "258753159", "195375888", "testEmail@email.com", "test1");
-        app.getContactHelper().fillContactData(contact, true);
-        app.getContactHelper().submitContactCreation();
-        app.getContactHelper().returnToHomePage();
-        List<ContactData> after = app.getContactHelper().getContactsList();
+        ContactData contact = new ContactData().withFirstName("test313").withLastName("test2").withNickName(null).withAddress("testaddress, 334")
+                .withHomePhone("258753159").withMobile("195375888").withWork("195375888").withEmail("testEmail@email.com").withGroup("test1");
+        app.contact().fillContactData(contact, true);
+        app.contact().submitContactCreation();
+        app.contact().returnToHomePage();
+        List<ContactData> after = app.contact().list();
 
         Assert.assertEquals(after.size(), before.size() + 1);
         before.add(contact);
